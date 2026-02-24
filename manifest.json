@@ -7,11 +7,5 @@
   "background_color": "transparent",
   "theme_color": "transparent",
   "orientation": "portrait",
-  "icons": [
-    {
-      "src": "icon-180.png",
-      "sizes": "180x180",
-      "type": "image/png"
-    }
-  ]
+  "icons":[{"src":"icon-180.png","sizes":"180x180","type":"image/png"}]
 }
