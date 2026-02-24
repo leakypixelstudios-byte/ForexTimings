@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
 <title>Forex Sessions</title>
 
-<!-- PWA & iOS Home Screen -->
+<!-- iOS PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Forex Sessions">
@@ -28,127 +26,74 @@
   --text:#8b8fa6;
 }
 
-* {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  -webkit-touch-callout:none;
-}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-touch-callout:none; }
 
 html, body {
   height:100%;
   width:100%;
   background: transparent;
-  font-family:'Roboto Mono', monospace;
-  overflow:hidden;
-  touch-action:manipulation;
-  overscroll-behavior:none;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Roboto Mono', monospace;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
-body {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:14px;
+body::before {
+  content:'';
+  position: fixed;
+  inset:0;
+  background: transparent;
+  z-index: -1;
 }
+
+body { display:flex; align-items:center; justify-content:center; padding:14px; }
 
 .app {
-  position:absolute;
-  width:760px;
-  max-width:95vw;
-  padding:22px;
-  border-radius:22px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 760px;
+  max-width: 95vw;
+  padding: 22px;
+  border-radius: 22px;
   background: rgba(31,34,48,0.25);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   box-shadow:0 24px 60px rgba(0,0,0,.7);
-  left:50%;
-  top:50%;
-  transform: translate(-50%, -50%);
 }
 
-.header {
-  text-align:center;
-  font-size:1.6em;
-  font-weight:700;
-  color:var(--text);
-  margin-bottom:.6em;
-}
+.header { text-align:center; font-size:1.6em; font-weight:700; color:var(--text); margin-bottom:.6em; }
 
-.bar-group { margin-top:16px; position:relative; }
+.bar-group { margin-top:16px; position: relative; }
 
-.label {
-  display:flex;
-  justify-content:space-between;
-  font-size:.9rem;
-  color:var(--text);
-  margin-bottom:6px;
-}
-
+.label { display:flex; justify-content:space-between; font-size:.9rem; color:var(--text); margin-bottom:6px; }
 .label span.session-name { font-weight:bold; }
 .label span.session-time { font-weight:400; }
 
-.bar {
-  height:20px;
-  background:rgba(31,34,48,.85);
-  border-radius:12px;
-  overflow:hidden;
-  position:relative;
-}
+.bar { height:20px; background:rgba(31,34,48,.85); border-radius:12px; overflow:hidden; position:relative; }
+.fill { height:100%; width:0; transition: width .6s ease; position:relative; }
 
-.fill {
-  height:100%;
-  width:0;
-  transition:width .6s ease;
-  position:relative;
-}
-
-.tokyo { background:linear-gradient(90deg,#ff5fa2,var(--tokyo)); }
-.london { background:linear-gradient(90deg,#5a9fff,var(--london)); }
-.newyork { background:linear-gradient(90deg,#ffc266,var(--newyork)); }
-.overlap { background:linear-gradient(90deg,#e0ad81,var(--overlap)); }
+.tokyo { background: linear-gradient(90deg,#ff5fa2,var(--tokyo)); }
+.london { background: linear-gradient(90deg,#5a9fff,var(--london)); }
+.newyork { background: linear-gradient(90deg,#ffc266,var(--newyork)); }
+.overlap { background: linear-gradient(90deg,#e0ad81,var(--overlap)); }
 
 .closed-pattern::before {
   content:'';
   position:absolute;
   inset:0;
-  background: repeating-linear-gradient(
-    135deg,
-    rgba(80,80,80,.5) 0 40px,
-    rgba(80,80,80,0) 40px 80px
-  );
+  background: repeating-linear-gradient(135deg,rgba(80,80,80,.5) 0 40px, rgba(80,80,80,0) 40px 80px);
 }
 
-.killzone-active .overlap {
-  animation:glow 1.4s infinite;
-}
+.killzone-active .overlap { animation: glow 1.4s infinite; }
+@keyframes glow { 50% { filter: brightness(1.6); } }
 
-@keyframes glow {
-  50% { filter:brightness(1.6); }
-}
+.quote { margin-top: 1.6em; font-style: italic; font-size: .9rem; color: var(--text); }
+.quote-author { font-size: .65rem; margin-top:.2em; }
 
-.quote {
-  margin-top:1.6em;
-  font-style:italic;
-  font-size:.9rem;
-  color:var(--text);
-}
-
-.quote-author {
-  font-size:.65rem;
-  margin-top:.2em;
-}
-
-/* Minimal idle mode */
-.minimal .bar-group,
-.minimal .quote { display:none; }
-
-.minimal .header { font-size:2.2em; }
-
-/* iPad scaling */
-@media (min-width:768px) and (max-width:1024px) {
-  .app { width:92vw; }
-}
+@media (min-width:768px) and (max-width:1024px) { .app { width:92vw; } }
 </style>
 </head>
 
@@ -186,130 +131,53 @@ body {
 
 <script>
 /* ---------- Service Worker ---------- */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 
-/* ---------- Audio ---------- */
-const openSound = new Audio(
-  "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="
-);
-window.addEventListener('touchstart', () => { openSound.play().catch(()=>{}); }, { once:true });
-
-/* ---------- Time Logic ---------- */
-const sessionsUTC = {
-  tokyo: { start:0, end:9 },
-  london: { start:8, end:16 },
-  newyork: { start:13, end:22 }
-};
-
+/* ---------- Time & Sessions ---------- */
+const sessionsUTC = { tokyo:{start:0,end:9}, london:{start:8,end:16}, newyork:{start:13,end:22} };
 const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-function computeNowUTC() {
-  const d = new Date();
-  return d.getUTCHours() + d.getUTCMinutes()/60 + d.getUTCSeconds()/3600;
-}
-
-function formatTime(h){
-  const now = new Date();
-  const dt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), Math.floor(h), Math.floor((h%1)*60)));
-  return dt.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', hour12:false, timeZone:userTZ });
-}
-
-function formatCountdown(sec){
-  const h = String(Math.floor(sec/3600)).padStart(2,'0');
-  const m = String(Math.floor((sec%3600)/60)).padStart(2,'0');
-  const s = String(Math.floor(sec%60)).padStart(2,'0');
-  return `${h}:${m}:${s}`;
-}
+function nowUTC(){ const d=new Date(); return d.getUTCHours()+d.getUTCMinutes()/60+d.getUTCSeconds()/3600; }
+function formatTime(h){ const n=new Date(); const dt=new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate(),Math.floor(h),Math.floor((h%1)*60))); return dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit', hour12:false, timeZone:userTZ}); }
+function formatCountdown(sec){ const h=String(Math.floor(sec/3600)).padStart(2,'0'); const m=String(Math.floor(sec%3600/60)).padStart(2,'0'); const s=String(Math.floor(sec%60)).padStart(2,'0'); return `${h}:${m}:${s}`; }
 
 function updateSession(name,s){
-  const bar = document.getElementById(name+'-bar');
-  const label = document.getElementById(name+'-label');
-  const cd = document.getElementById(name+'-countdown');
-  const now = computeNowUTC();
+  const bar=document.getElementById(name+'-bar');
+  const label=document.getElementById(name+'-label');
+  const cd=document.getElementById(name+'-countdown');
+  const now=nowUTC();
 
-  const displayName = name.charAt(0).toUpperCase() + name.slice(1) + ' Session';
-  label.innerHTML = `<span class="session-name">${displayName}</span> <span class="session-time">(${formatTime(s.start)} - ${formatTime(s.end)})</span>`;
+  const displayName=name.charAt(0).toUpperCase()+name.slice(1)+' Session';
+  label.innerHTML=`<span class="session-name">${displayName}</span> <span class="session-time">(${formatTime(s.start)} - ${formatTime(s.end)})</span>`;
 
-  if(now < s.start){
-    bar.style.width='0%';
-    bar.classList.remove('closed-pattern');
-    cd.textContent='Opens in: '+formatCountdown((s.start-now)*3600);
-  } else if(now > s.end){
-    bar.style.width='100%';
-    bar.classList.add('closed-pattern');
-    cd.textContent='Session Closed';
-  } else {
-    bar.classList.remove('closed-pattern');
-    bar.style.width=((now-s.start)/(s.end-s.start)*100)+'%';
-    cd.textContent='Time Remaining: '+formatCountdown((s.end-now)*3600);
-
-    if(Math.abs(now-s.start)<0.002){
-      openSound.play().catch(()=>{});
-      navigator.vibrate && navigator.vibrate(40);
-    }
-  }
+  if(now<s.start){ bar.style.width='0%'; bar.classList.remove('closed-pattern'); cd.textContent='Opens in '+formatCountdown((s.start-now)*3600); }
+  else if(now>s.end){ bar.style.width='100%'; bar.classList.add('closed-pattern'); cd.textContent='Session Closed'; }
+  else { bar.classList.remove('closed-pattern'); bar.style.width=((now-s.start)/(s.end-s.start)*100)+'%'; cd.textContent='Remaining '+formatCountdown((s.end-now)*3600); }
 }
 
 function updateOverlap(){
-  const now = computeNowUTC();
-  const overlaps = [
-    { name:'Tokyo – London Session Overlap', start:8, end:9 },
-    { name:'London – New York Session Overlap', start:13, end:16 }
-  ];
-
-  const g = document.getElementById('overlap-group');
-  const current = overlaps.find(o=> now>=o.start && now<=o.end );
-
+  const now=nowUTC();
+  const overlaps=[{name:'Tokyo–London Session Overlap',start:8,end:9},{name:'London–New York Session Overlap',start:13,end:16}];
+  const g=document.getElementById('overlap-group');
+  const current=overlaps.find(o=> now>=o.start && now<=o.end);
   if(current){
     g.style.display='block';
     document.getElementById('app').classList.add('killzone-active');
-    document.getElementById('overlap-name').textContent = current.name;
-    document.getElementById('overlap-bar').style.width = ((now-current.start)/(current.end-current.start)*100)+'%';
-    document.getElementById('overlap-countdown').textContent = 'Time Remaining: '+formatCountdown((current.end-now)*3600);
-  } else {
-    g.style.display='none';
-    document.getElementById('app').classList.remove('killzone-active');
-  }
+    document.getElementById('overlap-name').textContent=current.name;
+    document.getElementById('overlap-bar').style.width=((now-current.start)/(current.end-current.start)*100)+'%';
+    document.getElementById('overlap-countdown').textContent='Remaining '+formatCountdown((current.end-now)*3600);
+  } else { g.style.display='none'; document.getElementById('app').classList.remove('killzone-active'); }
 }
 
-function tick(){
-  Object.keys(sessionsUTC).forEach(k => updateSession(k, sessionsUTC[k]));
-  updateOverlap();
-}
-tick();
-setInterval(tick,1000);
+function tick(){ Object.keys(sessionsUTC).forEach(k=>updateSession(k,sessionsUTC[k])); updateOverlap(); }
+tick(); setInterval(tick,1000);
 
 /* ---------- Drag to Move ---------- */
 let drag=false,sx,sy,ox,oy;
 const app=document.getElementById('app');
-
-app.addEventListener('touchstart',e=>{
-  drag=true;
-  sx=e.touches[0].clientX;
-  sy=e.touches[0].clientY;
-  const r=app.getBoundingClientRect();
-  ox=r.left; oy=r.top;
-});
-
-window.addEventListener('touchmove',e=>{
-  if(!drag)return;
-  app.style.left=ox+(e.touches[0].clientX-sx)+'px';
-  app.style.top =oy+(e.touches[0].clientY-sy)+'px';
-});
-
+app.addEventListener('touchstart',e=>{ drag=true; sx=e.touches[0].clientX; sy=e.touches[0].clientY; const r=app.getBoundingClientRect(); ox=r.left; oy=r.top; });
+window.addEventListener('touchmove',e=>{ if(!drag)return; app.style.left=ox+(e.touches[0].clientX-sx)+'px'; app.style.top=oy+(e.touches[0].clientY-sy)+'px'; });
 window.addEventListener('touchend',()=>drag=false);
-
-/* ---------- Idle Minimal Mode ---------- */
-let idle;
-function resetIdle(){
-  clearTimeout(idle);
-  document.body.classList.remove('minimal');
-  idle=setTimeout(()=>document.body.classList.add('minimal'),30000);
-}
-['touchstart','mousemove','keydown'].forEach(e=>window.addEventListener(e,resetIdle));
-resetIdle();
 </script>
 </body>
 </html>
